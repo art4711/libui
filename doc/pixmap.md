@@ -10,13 +10,13 @@ Different backends support different formats.
 
 Things to consider:
 
-32 bit pixels or packed 24 bit pixels.
-alpha or no alpha
-alpha first, alpha last
-pixels treated as a byte array or uint32
-uint32 endianness
-alpha pre-multiplied or not
-0,0 corner
+ * 32 bit pixels or packed 24 bit pixels.
+ * alpha or no alpha
+ * alpha first, alpha last
+ * pixels treated as a byte array or uint32
+ * uint32 endianness
+ * alpha pre-multiplied or not
+ * 0,0 corner
 
 For our use case we can find these examples:
 
