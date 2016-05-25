@@ -141,25 +141,13 @@ void uiDrawRestore(uiDrawContext *c)
 	cairo_restore(c->cr);
 }
 
-uiDrawPixmapFormat uiDrawNativePixmapFormat(void)
-{
-	return uiDrawPixmapFormatARGB;
-}
-
-void uiDrawPixmap(uiDrawContext *c, double x, double y, int width, int height, int rowstride, uiDrawPixmapFormat format, void *data)
+void uiDrawPixmap(uiDrawContext *c, double x, double y, int width, int height, int rowstride, void *data)
 {
 	cairo_surface_t *surface;
 	int dstride;
 	unsigned char *src;
 	unsigned char *dst;
 	int row;
-
-	switch (format) {
-	case uiDrawPixmapFormatARGB:
-		break;
-	default:
-		implbug("uiDrawPixmap: non-ARGB format not supported");
-	}
 
 	surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, width, height);
 	dstride = cairo_image_surface_get_stride(surface);
