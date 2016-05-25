@@ -452,3 +452,41 @@ void uiDrawText(uiDrawContext *c, double x, double y, uiDrawTextLayout *layout)
 {
 	doDrawText(c->c, c->height, x, y, layout);
 }
+
+uiDrawPixmapFormat uiDrawNativePixmapFormat(void)
+{
+	return uiDrawPixmapFormatARGB;
+}
+
+static void imgFree(void *info, const void *data, size_t sz)
+{
+	uiFree(info);
+}
+
+void uiDrawPixmap(uiDrawContext *c, double x, double y, int width, int height, int rowstride, uiDrawPixmapFormat type, void *data)
+{
+	CGBitmapInfo binfo = kCGBitmapByteOrder32Little; // XXX - should be Big on big-endian machines.
+	int bpp = 0;
+	switch (type) {
+	case uiDrawPixmapFormatARGB:
+		binfo |= kCGImageAlphaFirst;
+		bpp = 32;
+		break;
+	default:
+		userbug("uiDrawPixmap unsupported type %u", type);
+	}
+
+	uint8_t *src = data;
+	uint8_t *dst = uiAlloc(height * rowstride, "imgdata");
+	int row;
+
+	for (row = 0; row < height; row++) {
+		memcpy(&dst[(height - row) * rowstride], &src[row * rowstride], rowstride);
+	}
+
+	CGContextDrawImage(c->c, CGRectMake(x, y, width, height),
+		CGImageCreate(width, height, 8, bpp, rowstride,
+			CGColorSpaceCreateDeviceRGB(), binfo,
+			CGDataProviderCreateWithData(dst, dst, rowstride * height, imgFree),
+			NULL, false, kCGRenderingIntentDefault));
+}

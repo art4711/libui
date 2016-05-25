@@ -429,6 +429,15 @@ _UI_EXTERN void uiDrawClip(uiDrawContext *c, uiDrawPath *path);
 _UI_EXTERN void uiDrawSave(uiDrawContext *c);
 _UI_EXTERN void uiDrawRestore(uiDrawContext *c);
 
+_UI_ENUM(uiDrawPixmapFormat) {
+	uiDrawPixmapFormatRGB,
+	uiDrawPixmapFormatRGBA,
+	uiDrawPixmapFormatARGB,
+};
+
+_UI_EXTERN uiDrawPixmapFormat uiDrawNativePixmapFormat(void);
+_UI_EXTERN void uiDrawPixmap(uiDrawContext *c, double x, double y, int width, int height, int rowstride, uiDrawPixmapFormat type, void *data);
+
 // TODO manage the use of Text, Font, and TextFont, and of the uiDrawText prefix in general
 
 ///// TODO
