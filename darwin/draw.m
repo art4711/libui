@@ -467,7 +467,7 @@ void uiDrawPixmap(uiDrawContext *c, double x, double y, int width, int height, i
 
 	// copy the data and flip it upside down
 	for (row = 0; row < height; row++) {
-		memcpy(&dst[(height - row) * rowstride], &src[row * rowstride], rowstride);
+		memcpy(&dst[(height - row - 1) * rowstride], &src[row * rowstride], rowstride);
 	}
 
 	CGContextDrawImage(c->c, CGRectMake(x, y, width, height),
