@@ -53,6 +53,9 @@ extern void fallbackSkew(uiDrawMatrix *, double, double, double, double);
 extern void scaleCenter(double, double, double *, double *);
 extern void fallbackTransformSize(uiDrawMatrix *, double *, double *);
 
+// image.c
+extern void pixmap32RawCopy(int width, int height, int srs, uint32_t *src, uiPixmap32Format sfmt, int drs, uint32_t *dst, uiPixmap32Format dfmt);
+
 #ifdef __cplusplus
 }
 #endif

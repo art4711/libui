@@ -429,7 +429,29 @@ _UI_EXTERN void uiDrawClip(uiDrawContext *c, uiDrawPath *path);
 _UI_EXTERN void uiDrawSave(uiDrawContext *c);
 _UI_EXTERN void uiDrawRestore(uiDrawContext *c);
 
-_UI_EXTERN void uiDrawPixmap(uiDrawContext *c, double x, double y, int width, int height, int rowstride, void *data);
+/*
+ * uiPixmap32Format encodes how a pixmap is formatted.
+ * The lower 16 bits encode the byte offsets of each of
+ * R, G, B, A channels.
+ */
+typedef uint32_t uiPixmap32Format;
+#define uiPixmap32FormatOffsetA(f)		(((f) >> 0) & 0x3)
+#define uiPixmap32FormatOffsetR(f)		(((f) >> 2) & 0x3)
+#define uiPixmap32FormatOffsetG(f)		(((f) >> 4) & 0x3)
+#define uiPixmap32FormatOffsetB(f)		(((f) >> 6) & 0x3)
+#define uiPixmap32FormatOffsetMask		0x0ff
+#define uiPixmap32FormatHasAlpha		0x100
+#define uiPixmap32FormatAlphaPremultiplied	0x200
+#define uiPixmap32FormatZeroRowBottom		0x400
+
+_UI_EXTERN uiPixmap32Format uiImagePreferedPixmap32Format(void);
+
+typedef struct uiImage uiImage;
+_UI_EXTERN uiImage *uiNewImage(int width, int height);
+_UI_EXTERN void uiFreeImage(uiImage *);
+_UI_EXTERN void uiImageLoadPixmap32Raw(uiImage *img, int x, int y, int width, int height, int rowstrideBytes, uiPixmap32Format fmt, void *data);
+
+_UI_EXTERN void uiDrawImage(uiDrawContext *c, double x, double y, uiImage *img);
 
 // TODO manage the use of Text, Font, and TextFont, and of the uiDrawText prefix in general
 

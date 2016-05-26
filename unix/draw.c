@@ -140,25 +140,3 @@ void uiDrawRestore(uiDrawContext *c)
 {
 	cairo_restore(c->cr);
 }
-
-void uiDrawPixmap(uiDrawContext *c, double x, double y, int width, int height, int rowstride, void *data)
-{
-	cairo_surface_t *surface;
-	int dstride;
-	unsigned char *src;
-	unsigned char *dst;
-	int row;
-
-	surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, width, height);
-	dstride = cairo_image_surface_get_stride(surface);
-	src = data;
-	dst = cairo_image_surface_get_data(surface);
-
-	for (row = 0; row < height; row++) {
-		memcpy(&dst[row * dstride], &src[row * rowstride], 4 * width);
-	}
-	cairo_surface_mark_dirty(surface);
-	cairo_set_source_surface(c->cr, surface, x, y);
-	cairo_paint(c->cr);
-	cairo_surface_destroy(surface);
-}

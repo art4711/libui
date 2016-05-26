@@ -13,6 +13,7 @@ CFILES += \
 	unix/datetimepicker.c \
 	unix/debug.c \
 	unix/draw.c \
+	unix/drawimage.c \
 	unix/drawmatrix.c \
 	unix/drawpath.c \
 	unix/drawtext.c \
