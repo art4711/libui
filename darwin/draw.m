@@ -453,26 +453,8 @@ void uiDrawText(uiDrawContext *c, double x, double y, uiDrawTextLayout *layout)
 	doDrawText(c->c, c->height, x, y, layout);
 }
 
-static void imgFree(void *info, const void *data, size_t sz)
+void uiDrawImage(uiDrawContext *c, double x, double y, uiImage *img)
 {
-	uiFree(info);
+	CGContextDrawImage(c->c, CGRectMake(x, y, img->w, img->h), CGBitmapContextCreateImage(img->c));
 }
 
-void uiDrawPixmap(uiDrawContext *c, double x, double y, int width, int height, int rowstride, void *data)
-{
-	CGBitmapInfo binfo = kCGImageAlphaFirst | kCGBitmapByteOrder32Little; // XXX - should be Big on big-endian machines.
-	uint8_t *src = data;
-	uint8_t *dst = uiAlloc(height * rowstride, "imgdata");
-	int row;
-
-	// copy the data and flip it upside down
-	for (row = 0; row < height; row++) {
-		memcpy(&dst[(height - row - 1) * rowstride], &src[row * rowstride], rowstride);
-	}
-
-	CGContextDrawImage(c->c, CGRectMake(x, y, width, height),
-		CGImageCreate(width, height, 8, 32, rowstride,
-			CGColorSpaceCreateDeviceRGB(), binfo,
-			CGDataProviderCreateWithData(dst, dst, rowstride * height, imgFree),
-			NULL, false, kCGRenderingIntentDefault));
-}

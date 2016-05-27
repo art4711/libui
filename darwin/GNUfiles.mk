@@ -14,6 +14,7 @@ MFILES += \
 	darwin/datetimepicker.m \
 	darwin/debug.m \
 	darwin/draw.m \
+	darwin/drawimage.m \
 	darwin/drawtext.m \
 	darwin/editablecombo.m \
 	darwin/entry.m \
