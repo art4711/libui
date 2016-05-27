@@ -1,11 +1,5 @@
 #import "uipriv_darwin.h"
 
-uiPixmap32Format uiImagePreferedPixmap32Format(void)
-{
-	/* Always big endian, because why not. */
-	return uiPixmap32FormatHasAlpha | uiPixmap32FormatAlphaPremultiplied | uiPixmap32FormatZeroRowBottom | uiPixmap32FormatOffsets(0, 1, 2, 3);
-}
-
 uiImage *uiNewImage(int w, int h)
 {
 	uiImage *img = uiNew(uiImage);
@@ -19,7 +13,7 @@ uiImage *uiNewImage(int w, int h)
 	img->h = h;
 	img->bmapdata = uiAlloc(h * img->rowstride, "imgdata");
 
-	img->c = CGBitmapContextCreate(img->bmapdata, w, h, 8, img->rowstride, CGColorSpaceCreateDeviceRGB(), kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Big);
+	img->c = CGBitmapContextCreate(img->bmapdata, w, h, 8, img->rowstride, CGColorSpaceCreateDeviceRGB(), kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Little);
 
 	return img;
 }
@@ -29,6 +23,18 @@ void uiFreeImage(uiImage *img)
 	uiFree(img->bmapdata);
 	CGContextRelease(img->c);
 	uiFree(img);
+}
+
+static const uiPixmap32Format default_fmt = uiPixmap32FormatHasAlpha | uiPixmap32FormatAlphaPremultiplied | uiPixmap32FormatZeroRowBottom | uiPixmap32FormatOffsets(3, 2, 1, 0);
+
+void uiImageGetData(uiImage *img, uiImageData *id)
+{
+	/* Always big endian for now. */
+	id->fmt = default_fmt;
+	id->width = img->w;
+	id->height = img->h;
+	id->rowstride = img->rowstride;
+	id->data = img->bmapdata;
 }
 
 void uiImageLoadPixmap32Raw(uiImage *img, int x, int y, int width, int height, int rowstrideBytes, uiPixmap32Format fmt, void *data)
@@ -44,5 +50,5 @@ void uiImageLoadPixmap32Raw(uiImage *img, int x, int y, int width, int height, i
 	if ((rowstrideBytes & 3) != 0)
 		userbug("rowstride is not divisble by 4, your code must be actively hostile to generate that");
 
-	pixmap32RawCopy(sw, sh, srs, data, fmt, drs, &dst[y * drs + x], uiImagePreferedPixmap32Format());
+	pixmap32RawCopy(sw, sh, srs, data, fmt, drs, &dst[y * drs + x], default_fmt);
 }
