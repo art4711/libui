@@ -37,7 +37,7 @@ void pixmap32RawCopy(int width, int height, int srs, uint32_t *src, uiPixmap32Fo
 				*da = *sa; sa += 4; da += 4;
 				*dr = *sr; sr += 4; dr += 4;
 				*dg = *sg; sg += 4; dg += 4;
-				*db = *sb; sb += 4; db += 4;				
+				*db = *sb; sb += 4; db += 4;
 			}
 		}
 	} else {
