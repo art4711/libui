@@ -439,6 +439,7 @@ typedef uint32_t uiPixmap32Format;
 #define uiPixmap32FormatOffsetR(f)		(((f) >> 2) & 0x3)
 #define uiPixmap32FormatOffsetG(f)		(((f) >> 4) & 0x3)
 #define uiPixmap32FormatOffsetB(f)		(((f) >> 6) & 0x3)
+#define uiPixmap32FormatOffsets(a,r,g,b)	((a) << 0 | (r) << 2 | (g) << 4 | (b) << 6)
 #define uiPixmap32FormatOffsetMask		0x0ff
 #define uiPixmap32FormatHasAlpha		0x100
 #define uiPixmap32FormatAlphaPremultiplied	0x200
