@@ -25,11 +25,11 @@ void uiFreeImage(uiImage *img)
 	uiFree(img);
 }
 
+// always little endian ARGB for now.
 static const uiPixmap32Format default_fmt = uiPixmap32FormatHasAlpha | uiPixmap32FormatAlphaPremultiplied | uiPixmap32FormatZeroRowBottom | uiPixmap32FormatOffsets(3, 2, 1, 0);
 
 void uiImageGetData(uiImage *img, uiImageData *id)
 {
-	/* Always big endian for now. */
 	id->fmt = default_fmt;
 	id->width = img->w;
 	id->height = img->h;
