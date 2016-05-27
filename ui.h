@@ -431,7 +431,7 @@ _UI_EXTERN void uiDrawRestore(uiDrawContext *c);
 
 /*
  * uiPixmap32Format encodes how a pixmap is formatted.
- * The lower 16 bits encode the byte offsets of each of
+ * The lower 8 bits encode the byte offsets of each of
  * R, G, B, A channels.
  */
 typedef uint32_t uiPixmap32Format;
