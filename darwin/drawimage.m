@@ -6,7 +6,6 @@ uiPixmap32Format uiImagePreferedPixmap32Format(void)
 	return uiPixmap32FormatHasAlpha | uiPixmap32FormatAlphaPremultiplied | uiPixmap32FormatZeroRowBottom | uiPixmap32FormatOffsets(0, 1, 2, 3);
 }
 
-
 uiImage *uiNewImage(int w, int h)
 {
 	uiImage *img = uiNew(uiImage);
@@ -28,7 +27,7 @@ uiImage *uiNewImage(int w, int h)
 void uiFreeImage(uiImage *img)
 {
 	uiFree(img->bmapdata);
-	// XXX - free the context
+	CGContextRelease(img->c);
 	uiFree(img);
 }
 
