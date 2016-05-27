@@ -21,26 +21,10 @@ const static union {
                 char pad0;
                 char pad1;
                 char big;
-        };
+        } is;
 } endian = {
         .a = 1
 };
-
-uiPixmap32Format uiImagePreferedPixmap32Format(void)
-{
-	uiPixmap32Format fmt = uiPixmap32FormatHasAlpha | uiPixmap32FormatAlphaPremultiplied;
-	/*
-	 * Cairo can only do host-endian uint32 ARGB with
-	 * pre-multiplied alpha, or no alpha. Any other format we'll
-	 * have to convert ourselves.
-	 */
-	if (endian.little) {
-		fmt |= uiPixmap32FormatOffsets(3, 2, 1, 0);
-	} else {
-		fmt |= uiPixmap32FormatOffsets(0, 1, 2, 3);
-	}
-	return fmt;
-}
 
 uiImage *uiNewImage(int width, int height)
 {
@@ -53,6 +37,20 @@ void uiFreeImage(uiImage *img)
 {
 	cairo_surface_destroy(img->s);
 	uiFree(img);
+}
+
+void uiImageGetData(uiImage *img, uiImageData *id)
+{
+	id->fmt = uiPixmap32FormatHasAlpha | uiPixmap32FormatAlphaPremultiplied;
+	if (endian.is.little) {
+		id->fmt |= uiPixmap32FormatOffsets(3, 2, 1, 0);
+	} else {
+		id->fmt |= uiPixmap32FormatOffsets(0, 1, 2, 3);
+	}
+	id->width = cairo_image_surface_get_width(img->s);
+	id->height = cairo_image_surface_get_height(img->s);
+	id->rowstride = cairo_image_surface_get_stride(img->s);
+	id->data = cairo_image_surface_get_data(img->s);
 }
 
 /*
@@ -68,18 +66,29 @@ void uiFreeImage(uiImage *img)
  */
 void uiImageLoadPixmap32Raw(uiImage *img, int x, int y, int width, int height, int rowstrideBytes, uiPixmap32Format fmt, void *data)
 {
-	int dw = cairo_image_surface_get_width(img->s);
-	int dh = cairo_image_surface_get_height(img->s);
-	int sw = width + x > dw ? dw : width;
-	int sh = height + y > dh ? dh : height;
-	int drs = cairo_image_surface_get_stride(img->s) / 4;
-	int srs = rowstrideBytes / 4;
-	uint32_t *dst = (uint32_t *)cairo_image_surface_get_data(img->s);	// assumes correct alignment.
+	int sw;
+	int sh;
+	int srs;
+	int dw;
+	int dh;
+	int drs;
+	uint32_t *dst;
+	uiImageData dstd;
+
+	uiImageGetData(img, &dstd);
+	drs = dstd.rowstride / 4;
+	dst = (uint32_t *)dstd.data;	// assumes good alignment.
+	dw = dstd.width;
+	dh = dstd.height;
+
+	sw = width + x > dw ? dw : width;
+	sh = height + y > dh ? dh : height;
+	srs = rowstrideBytes / 4;
 
 	if ((rowstrideBytes & 3) != 0)
 		userbug("rowstride is not divisble by 4, your code must be actively hostile to generate that");
 
-	pixmap32RawCopy(sw, sh, srs, data, fmt, drs, &dst[y * drs + x], uiImagePreferedPixmap32Format());
+	pixmap32RawCopy(sw, sh, srs, data, fmt, drs, &dst[y * drs + x], dstd.fmt);
 	cairo_surface_mark_dirty(img->s);
 }
 
@@ -87,6 +96,7 @@ void uiImageLoadPixmap32Raw(uiImage *img, int x, int y, int width, int height, i
 
 void uiDrawImage(uiDrawContext *c, double x, double y, uiImage *img)
 {
+	cairo_surface_mark_dirty(img->s);		// This is the best place for this, I guess.
 	cairo_set_source_surface(c->cr, img->s, x, y);
 	cairo_paint(c->cr);
 }
